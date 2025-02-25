@@ -1,0 +1,94 @@
+﻿@model Domain.Models.NewsArticle
+@using Domain.Models
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Edit</h1>
+
+<h4>NewsArticle</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="NewsArticleId" />
+            <div class="form-group">
+                <label asp-for="NewsTitle" class="control-label"></label>
+                <input asp-for="NewsTitle" class="form-control" />
+                <span asp-validation-for="NewsTitle" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Headline" class="control-label"></label>
+                <input asp-for="Headline" class="form-control" />
+                <span asp-validation-for="Headline" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="NewsContent" class="control-label"></label>
+                <input asp-for="NewsContent" class="form-control" />
+                <span asp-validation-for="NewsContent" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="NewsSource" class="control-label"></label>
+                <input asp-for="NewsSource" class="form-control" />
+                <span asp-validation-for="NewsSource" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CategoryId" class="control-label">Category</label>
+                @Html.DropDownList("CategoryId", ViewBag.Categories as SelectList, new { @class = "form-control" })
+                <span asp-validation-for="CategoryId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="NewsStatus" class="control-label"></label>
+                @Html.DropDownList("NewsStatus", ViewBag.StatusList as List<SelectListItem>, new { @class = "form-control" })
+                <span asp-validation-for="NewsStatus" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label for="Tags">Tags</label>
+                @{
+                    var selectedTags = ViewBag.SelectedTags as List<int> ?? new List<int>();
+                }
+                <select id="tag-select" class="chosen-select form-control" name="Tags" multiple>
+                    @foreach (var tag in ViewBag.Tags as SelectList)
+                    {
+                        if (selectedTags.Contains(int.Parse(tag.Value)))
+                        {
+                            <option value="@tag.Value" selected>@tag.Text</option>
+                        }
+                        else
+                        {
+                            <option value="@tag.Value">@tag.Text</option>
+                        }
+                    }
+                </select>
+
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.rawgit.com/harvesthq/chosen/gh-pages/chosen.jquery.min.js"></script>
+    <link href="https://cdn.rawgit.com/harvesthq/chosen/gh-pages/chosen.min.css" rel="stylesheet" />
+
+    <script>
+        $(document).ready(function () {
+            $(".chosen-select").chosen({
+                no_results_text: "Không tìm thấy kết quả nào!"
+            });
+        });
+    </script>
+}

@@ -1,0 +1,37 @@
+﻿@model IEnumerable<Domain.Models.NewsArticle>
+@{
+    ViewData["Title"] = "Home Page";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+<h2>News Articles</h2>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Category</th>
+            <th>Created Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    <a href="@Url.Action("Details", "NewsArticle", new { id = item.NewsArticleId })" class="text-decoration-none text-dark">
+                        @Html.DisplayFor(modelItem => item.NewsTitle)
+                    </a>
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.Category.CategoryName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreatedDate)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
