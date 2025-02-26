@@ -26,10 +26,11 @@ builder.Services.AddScoped<ITagService, TagService>();
 
 
 builder.Services.AddDistributedMemoryCache();
-builder.Services.AddSession((option) =>
+builder.Services.AddSession(options =>
 {
-    option.Cookie.Name = "TienThuatCooking";
-    option.IdleTimeout = new TimeSpan(0, 30, 0);
+	options.IdleTimeout = TimeSpan.FromMinutes(30);
+	options.Cookie.HttpOnly = true;
+	options.Cookie.IsEssential = true;
 });
 
 var app = builder.Build();
@@ -41,11 +42,21 @@ if (!app.Environment.IsDevelopment())
 }
 app.UseStaticFiles();
 
+//app.UseMiddleware<AuthorizationMiddleware>();
+
 app.UseRouting();
 
 app.UseSession();
 
 app.UseAuthorization();
+
+app.UseStatusCodePages(async context =>
+{
+    if (context.HttpContext.Response.StatusCode == 403)
+    {
+        context.HttpContext.Response.Redirect("/Home/Forbidden");
+    }
+});
 
 //app.UseEndpoints(endpoints =>
 //{

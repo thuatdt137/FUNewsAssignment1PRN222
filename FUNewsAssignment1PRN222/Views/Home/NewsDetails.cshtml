@@ -1,0 +1,13 @@
+﻿@model Domain.Models.NewsArticle
+
+@{
+    ViewData["Title"] = Model.NewsTitle;
+}
+
+<h1>@Model.NewsTitle</h1>
+<p><strong>Published On:</strong> @Model.CreatedDate?.ToString("dd/MM/yyyy")</p>
+<p><strong>Source:</strong> @Model.NewsSource</p>
+<hr>
+<p>@Model.NewsContent</p>
+
+<a asp-action="Index">Back to News List</a>

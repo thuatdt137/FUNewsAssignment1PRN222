@@ -32,5 +32,28 @@ namespace FUNewsAssignment1PRN222.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
+        public IActionResult NewsDetails(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return NotFound();
+            }
+
+            var article = _newsArticleService.GetActiveNewsArticleById(id);
+            if (article == null)
+            {
+                return NotFound();
+            }
+
+            return View(article);
+        }
+
+
+        public IActionResult Forbidden()
+        {
+            return View();
+        }
+
     }
 }

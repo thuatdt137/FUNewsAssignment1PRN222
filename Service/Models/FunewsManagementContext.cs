@@ -25,7 +25,7 @@ public partial class FunewsManagementContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=localhost;database=FUNewsManagement;Trusted_Connection=SSPI;Encrypt=false;TrustServerCertificate=true");
+        => optionsBuilder.UseSqlServer("Server=localhost;Database=FUNewsManagement;Trusted_Connection=SSPI;Encrypt=false;TrustServerCertificate=true");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -48,7 +48,7 @@ public partial class FunewsManagementContext : DbContext
             entity.ToTable("NewsArticle");
 
             entity.Property(e => e.NewsArticleId)
-                .HasMaxLength(20)
+                .HasMaxLength(36)
                 .HasColumnName("NewsArticleID");
             entity.Property(e => e.CategoryId).HasColumnName("CategoryID");
             entity.Property(e => e.CreatedById).HasColumnName("CreatedByID");
@@ -79,14 +79,13 @@ public partial class FunewsManagementContext : DbContext
                         .HasConstraintName("FK_NewsTag_Tag"),
                     l => l.HasOne<NewsArticle>().WithMany()
                         .HasForeignKey("NewsArticleId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
                         .HasConstraintName("FK_NewsTag_NewsArticle"),
                     j =>
                     {
                         j.HasKey("NewsArticleId", "TagId");
                         j.ToTable("NewsTag");
                         j.IndexerProperty<string>("NewsArticleId")
-                            .HasMaxLength(20)
+                            .HasMaxLength(36)
                             .HasColumnName("NewsArticleID");
                         j.IndexerProperty<int>("TagId").HasColumnName("TagID");
                     });
@@ -104,6 +103,7 @@ public partial class FunewsManagementContext : DbContext
             entity.Property(e => e.AccountEmail).HasMaxLength(70);
             entity.Property(e => e.AccountName).HasMaxLength(100);
             entity.Property(e => e.AccountPassword).HasMaxLength(70);
+            entity.Property(e => e.Status).HasDefaultValue(1);
         });
 
         modelBuilder.Entity<Tag>(entity =>

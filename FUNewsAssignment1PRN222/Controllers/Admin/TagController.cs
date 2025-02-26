@@ -1,10 +1,12 @@
 ﻿using Business.Interfaces;
 using Domain.Models;
+using FUNewsAssignment1PRN222.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FUNewsAssignment1PRN222.Controllers.Admin
 {
+    [AuthorizeRole("2", "3")]
     public class TagController : Controller
     {
         private readonly ITagService _tagService;
@@ -18,8 +20,8 @@ namespace FUNewsAssignment1PRN222.Controllers.Admin
         public IActionResult Index()
         {
             var tags = _tagService.GetAllTags();
-            return View(tags);
-        }
+			return View("~/Views/Admin/Tag/Edit.cshtml", tags);
+		}
 
         // GET: Tạo tag mới
         public IActionResult Create()

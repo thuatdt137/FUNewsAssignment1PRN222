@@ -20,7 +20,7 @@
         {
             <tr>
                 <td>
-                    <a href="@Url.Action("Details", "NewsArticle", new { id = item.NewsArticleId })" class="text-decoration-none text-dark">
+                    <a href="@Url.Action("NewsDetails", "Home", new { id = item.NewsArticleId })" class="text-decoration-none text-dark">
                         @Html.DisplayFor(modelItem => item.NewsTitle)
                     </a>
                 </td>

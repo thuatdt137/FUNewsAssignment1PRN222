@@ -1,11 +1,13 @@
 ﻿using Business.Interfaces;
 using Domain.Models;
+using FUNewsAssignment1PRN222.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FUNewsAssignment1PRN222.Controllers.Admin
 {
+    [AuthorizeRole("2", "3")]
     public class NewsArticleController : Controller
     {
         private readonly INewsArticleService _newsArticleService;
@@ -136,25 +138,48 @@ namespace FUNewsAssignment1PRN222.Controllers.Admin
             return View(newsArticle);
         }
 
-        // GET: NewsArticleController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
 
-        // POST: NewsArticleController/Delete/5
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        [AuthorizeRole("2", "3")] // Chỉ Staff và Admin mới có quyền xóa
+        public IActionResult Delete(string id)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                var success = _newsArticleService.DeleteNewsArticle(id);
+                if (!success)
+                {
+                    TempData["ErrorMessage"] = "Cannot delete this article because it has related data.";
+                }
+                else
+                {
+                    TempData["SuccessMessage"] = "Article deleted successfully.";
+                }
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                TempData["ErrorMessage"] = "An error occurred while deleting the article.";
             }
+
+            return RedirectToAction("Index");
         }
-    }
+		[HttpGet]
+		public IActionResult Search(string title)
+		{
+			var articles = _newsArticleService.GetAllActiveNewsArticles()
+				.Where(a => a.NewsTitle.ToLower().Contains(title.ToLower()))
+				.Select(a => new
+				{
+					a.NewsArticleId,
+					a.NewsTitle,
+					a.NewsStatus,
+					a.ModifiedDate,
+					CategoryName = a.Category.CategoryName
+				})
+				.ToList();
+
+			return Json(articles); // Trả về JSON để frontend cập nhật bảng
+		}
+
+
+	}
 }

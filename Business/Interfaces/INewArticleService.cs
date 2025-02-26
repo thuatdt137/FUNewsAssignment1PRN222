@@ -14,7 +14,9 @@ namespace Business.Interfaces
         NewsArticle GetNewsArticleById(string id);
         void CreateNewsArticle(NewsArticle newsArticle);
         void UpdateNewsArticle(NewsArticle newsArticle);
-        void DeleteNewsArticle(string id);
+        bool DeleteNewsArticle(string id);
         Task NotifyUserAsync(string? recipientEmail, string articleTitle, string author, string? articleId);
+        NewsArticle GetActiveNewsArticleById(string id);
+
     }
 }

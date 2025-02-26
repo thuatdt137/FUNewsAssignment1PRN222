@@ -25,6 +25,10 @@
                 <span asp-validation-for="AccountRole" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="Status" class="control-label"></label>
+                @Html.DropDownList("Status", ViewBag.StatusList as List<SelectListItem>, new { @class = "form-control" })
+            </div>
+            <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>

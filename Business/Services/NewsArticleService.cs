@@ -3,6 +3,7 @@ using Business.Interfaces;
 using DAL.Interfaces;
 using Domain.DTO;
 using Domain.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -78,9 +79,20 @@ namespace Assignment1MVC.Services
             _newsArticleRepository.UpdateNewsArticle(existedNewsArticle);
         }
 
-        public void DeleteNewsArticle(string id)
+        public NewsArticle GetActiveNewsArticleById(string id)
         {
-            _newsArticleRepository.DeleteNewsArticle(id);
+            return _newsArticleRepository.GetAllNewsArticles()
+                .FirstOrDefault(n => n.NewsArticleId == id && n.NewsStatus == true);
+        }
+
+
+        public bool DeleteNewsArticle(string articleId)
+        {
+            var article = _newsArticleRepository.GetNewsArticleById(articleId);
+            if (article == null) return false;
+
+            _newsArticleRepository.DeleteNewsArticle(articleId);
+            return true;
         }
         public async Task NotifyUserAsync(string ?recipientEmail, string articleTitle, string author, string ?articleId)
         {

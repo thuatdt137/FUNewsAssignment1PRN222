@@ -36,7 +36,8 @@ namespace Business.Services
                     AccountId = 0,
                     AccountEmail = adminEmail,
                     AccountPassword = adminPassword,
-                    AccountRole = 3
+                    AccountRole = 3,
+                    Status = 1,
                 };
             }
 

@@ -1,11 +1,13 @@
 ﻿using Business.Interfaces;
 using Domain.Models;
+using FUNewsAssignment1PRN222.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FUNewsAssignment1PRN222.Controllers.Admin
 {
+    [AuthorizeRole("3")]
     public class UserController : Controller
     {
         private readonly ISystemAccountService _systemAccountService;
@@ -75,6 +77,11 @@ namespace FUNewsAssignment1PRN222.Controllers.Admin
                 new SelectListItem { Value = "1", Text = "Staff" },
                 new SelectListItem { Value = "2", Text = "Lecture" }
             };
+            ViewBag.StatusList = new List<SelectListItem>
+            {
+                new SelectListItem { Value = "0", Text = "Inactive" },
+                new SelectListItem { Value = "1", Text = "Active" }
+            };
             return View("~/Views/Admin/User/Edit.cshtml", user);
         }
 
@@ -88,6 +95,7 @@ namespace FUNewsAssignment1PRN222.Controllers.Admin
             {
                 dbUser.AccountRole = user.AccountRole;
                 dbUser.AccountName = user.AccountName;
+                dbUser.Status = user.Status;
                 _systemAccountService.UpdateUser(dbUser);
                 return RedirectToAction(nameof(Index));
             }
@@ -95,6 +103,11 @@ namespace FUNewsAssignment1PRN222.Controllers.Admin
             {
                 new SelectListItem { Value = "1", Text = "Staff" },
                 new SelectListItem { Value = "2", Text = "Lecture" }
+            };
+            ViewBag.StatusList = new List<SelectListItem>
+            {
+                new SelectListItem { Value = "0", Text = "Inactive" },
+                new SelectListItem { Value = "1", Text = "Active" }
             };
             return View("~/Views/Admin/User/Edit.cshtml", user);
         }

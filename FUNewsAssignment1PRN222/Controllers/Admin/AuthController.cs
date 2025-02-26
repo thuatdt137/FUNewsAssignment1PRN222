@@ -1,4 +1,5 @@
 ﻿using Business.Interfaces;
+using FUNewsAssignment1PRN222.Utils;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FUNewsAssignment1PRN222.Controllers.Admin
@@ -28,13 +29,21 @@ namespace FUNewsAssignment1PRN222.Controllers.Admin
                 ViewBag.ErrorMessage = "Invalid email or password.";
                 return View();
             }
+			if (user.Status == 0)
+			{
+				ViewBag.ErrorMessage = "Your Account are deactived.";
+				return View();
+			}
 
-            // Lưu thông tin user vào session
-            HttpContext.Session.SetString("UserId", user.AccountId.ToString());
+
+			// Lưu thông tin user vào session
+			HttpContext.Session.SetString("UserId", user.AccountId.ToString());
             HttpContext.Session.SetString("UserName", user.AccountEmail);
-            HttpContext.Session.SetInt32("UserRole", user.AccountRole.GetValueOrDefault());
+            HttpContext.Session.SetString("UserRole", user.AccountRole.ToString());
+			HttpContext.Session.SetString("UserStatus", user.Status.ToString());
 
-            return RedirectToAction("Index", "Home");
+
+			return RedirectToAction("Index", "Home");
         }
         [HttpPost]
         public IActionResult Logout()
