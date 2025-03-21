@@ -16,7 +16,7 @@ public partial class NewsArticle
 	[StringLength(500, ErrorMessage = "Headline cannot exceed 500 characters")]
 	public string Headline { get; set; } = null!;
 	[DataType(DataType.DateTime)]
-	public DateTime? CreatedDate { get; set; }
+	public DateTime? CreatedDate { get; set; } = DateTime.Now;
 	[Required(ErrorMessage = "Content is required")]
 	public string? NewsContent { get; set; }
 	[StringLength(300, ErrorMessage = "News source cannot exceed 300 characters")]

@@ -1,0 +1,72 @@
+﻿@page
+@model Assignment2.Pages.NewsArticles.CreateModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+
+}
+<h1>Create</h1>
+
+<h4>NewsArticle</h4>
+<hr />
+<div class="row">
+	<div class="col-md-4">
+		<form asp-action="Create">
+			<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+			<div class="form-group">
+				<label asp-for="NewsArticle.NewsTitle" class="control-label"></label>
+				<input asp-for="NewsArticle.NewsTitle" class="form-control" />
+				<span asp-validation-for="NewsArticle.NewsTitle" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<label asp-for="NewsArticle.Headline" class="control-label"></label>
+				<input asp-for="NewsArticle.Headline" class="form-control" />
+				<span asp-validation-for="NewsArticle.Headline" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<label asp-for="NewsArticle.NewsContent" class="control-label"></label>
+				<input asp-for="NewsArticle.NewsContent" class="form-control" />
+				<span asp-validation-for="NewsArticle.NewsContent" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<label asp-for="NewsArticle.NewsSource" class="control-label"></label>
+				<input asp-for="NewsArticle.NewsSource" class="form-control" />
+				<span asp-validation-for="NewsArticle.NewsSource" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<label asp-for="NewsArticle.Category" class="control-label"></label>
+				<select asp-for="NewsArticle.CategoryId" asp-items="Model.CategoryList" class="form-control"></select>
+			</div>
+			<div class="form-group">
+				<label asp-for="NewsArticle.Tags" class="control-label">Tags</label>
+				<select id="tag-select" class="chosen-select form-control" name="SelectedTagIds" multiple>
+					@foreach (var tag in Model.TagList)
+					{
+						<option value="@tag.Value" id="tag-@tag.Value">@tag.Text</option>
+					}
+				</select>
+			</div>
+
+
+			<div class="form-group">
+				<input type="submit" value="Create" class="btn btn-primary" />
+			</div>
+		</form>
+	</div>
+</div>
+
+@section Scripts {
+	@await Html.PartialAsync("_ValidationScriptsPartial")
+	<!-- Thêm thư viện Chosen -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.min.css" />
+
+	<script>
+		$(document).ready(function () {
+			$(".chosen-select").chosen({
+				no_results_text: "Không tìm thấy kết quả!",
+				width: "100%" // Đảm bảo dropdown hiển thị đúng với form
+			});
+		});
+	</script>
+}

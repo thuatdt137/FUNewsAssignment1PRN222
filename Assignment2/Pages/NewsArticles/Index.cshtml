@@ -1,0 +1,285 @@
+﻿@page
+@model Assignment2.Pages.NewsArticles.IndexModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+	ViewData["Title"] = "Index";
+	Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Manage NewsArticle</h1>
+<input type="text" id="searchInput" class="form-control mb-2" placeholder="Search by title...">
+<button class="btn btn-primary mb-3" onclick="searchArticles()">Search</button>
+
+<!-- Form lọc -->
+<form method="get">
+	<div class="row mb-3">
+		<!-- Lọc theo category -->
+		<div class="col-md-3">
+			<label>Danh mục:</label>
+			<select asp-for="CategoryId" asp-items="Model.CategoryList" class="form-control">
+				<option value="">Tất cả</option>
+			</select>
+		</div>
+
+
+		<!-- Lọc theo Tag(kiểu dropdown) -->
+		@*
+		<div class="col-md-3">
+		<label>Tag:</label>
+		<select asp-for="TagId" asp-items="Model.TagList" class="form-control">
+		<option value="">Tất cả</option>
+		</select>
+		</div>
+		*@
+
+		<!-- Lọc theo Tag kiểu radio -->
+		<div class="col-md-3">
+			<label>Tag:</label>
+			<div>
+				<label>
+					<input type="radio" name="TagId" value="" checked="@(!Model.TagId.HasValue)" />
+					Tất cả
+				</label>
+				@foreach (var tag in Model.TagList)
+				{
+					<div>
+						<label>
+							<input type="radio" name="TagId" value="@tag.Value" checked="@(Model.TagId == int.Parse(tag.Value))" />
+							@tag.Text
+						</label>
+					</div>
+				}
+			</div>
+		</div>
+
+		<!-- Sắp xếp -->
+		<div class="col-md-3">
+			<label>Sắp xếp:</label>
+			<select asp-for="SortOrder" class="form-control">
+				<option value="date_desc">Mới nhất</option>
+				<option value="name_asc">Tên A-Z</option>
+				<option value="name_desc">Tên Z-A</option>
+				<option value="id_asc">ID tăng dần</option>
+				<option value="id_desc">ID giảm dần</option>
+			</select>
+		</div>
+
+		<div class="col-md-3">
+			<label>&nbsp;</label>
+			<button type="submit" class="btn btn-primary d-block">Lọc</button>
+		</div>
+	</div>
+</form>
+
+<p>
+	<a asp-page="Create" class="btn btn-success">Create New</a>
+	<button class="btn btn-primary" onclick="openExportModal('word')">Export to Word</button>
+</p>
+<table class="table">
+	<thead>
+		<tr>
+			<th>NewsTitle</th>
+			<th>NewsStatus</th>
+			<th>ModifiedDate</th>
+			<th>Category</th>
+			<th>Action</th>
+		</tr>
+	</thead>
+	<tbody id="articleTableBody">
+		@foreach (var item in Model.newsArticles)
+		{
+			<tr>
+				<td>@Html.DisplayFor(modelItem => item.NewsTitle)</td>
+				<td>@(item.NewsStatus == true ? "Active" : "Inactive")</td>
+				<td>@Html.DisplayFor(modelItem => item.ModifiedDate)</td>
+				<td>@Html.DisplayFor(modelItem => item.Category.CategoryName)</td>
+				<td>
+					<a asp-page="./Edit" asp-route-id="@item.NewsArticleId" class="btn btn-primary">Edit</a>
+					<a asp-page="./Details" asp-route-id="@item.NewsArticleId" class="btn btn-info">Details</a>
+					<button class="btn btn-danger" onclick="confirmDelete('@item.NewsArticleId')">Delete</button>
+				</td>
+			</tr>
+		}
+	</tbody>
+	<!-- Hiển thị phân trang -->
+	@if (Model.TotalPages > 1)
+	{
+		<nav>
+			<ul class="pagination">
+				@if (Model.PageNumber > 1)
+				{
+					<li class="page-item">
+						<a class="page-link" asp-page="Index"
+						   asp-route-PageNumber="@(Model.PageNumber - 1)"
+						   asp-route-CategoryId="@Model.CategoryId"
+						   asp-route-TagId="@Model.TagId"
+						   asp-route-SortOrder="@Model.SortOrder">
+							Trước
+						</a>
+					</li>
+				}
+
+				@for (int i = 1; i <= Model.TotalPages; i++)
+				{
+					<li class="page-item @(i == Model.PageNumber ? "active" : "")">
+						<a class="page-link" asp-page="Index"
+						   asp-route-PageNumber="@i"
+						   asp-route-CategoryId="@Model.CategoryId"
+						   asp-route-TagId="@Model.TagId"
+						   asp-route-SortOrder="@Model.SortOrder">
+							@i
+						</a>
+					</li>
+				}
+
+				@if (Model.PageNumber < Model.TotalPages)
+				{
+					<li class="page-item">
+						<a class="page-link" asp-page="Index"
+						   asp-route-PageNumber="@(Model.PageNumber + 1)"
+						   asp-route-CategoryId="@Model.CategoryId"
+						   asp-route-TagId="@Model.TagId"
+						   asp-route-SortOrder="@Model.SortOrder">
+							Tiếp
+						</a>
+					</li>
+				}
+			</ul>
+		</nav>
+	}
+	@*
+	@if (Model.TotalPages > 1)
+	{
+	<nav>
+	<ul class="pagination">
+	@if (Model.PageNumber > 1)
+	{
+	<li class="page-item">
+	<a class="page-link" asp-page="Index" asp-route-PageNumber="@(Model.PageNumber - 1)">Previous</a>
+	</li>
+	}
+
+	@for (int i = 1; i <= Model.TotalPages; i++)
+	{
+	<li class="page-item @(i == Model.PageNumber ? "active" : "")">
+	<a class="page-link" asp-page="Index" asp-route-PageNumber="@i">@i</a>
+	</li>
+	}
+
+	@if (Model.PageNumber < Model.TotalPages)
+	{
+	<li class="page-item">
+	<a class="page-link" asp-page="Index" asp-route-PageNumber="@(Model.PageNumber + 1)">Next</a>
+	</li>
+	}
+	</ul>
+	</nav>
+	}
+	*@
+	
+</table>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				Are you sure you want to delete this article?
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+				<form id="deleteForm" method="post">
+					<button type="submit" class="btn btn-danger">Delete</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Modal -->
+<div id="exportModal" class="modal fade" tabindex="-1" role="dialog">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">Chọn khoảng thời gian xuất file</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<label for="startDate">Từ ngày:</label>
+				<input type="date" id="startDate" class="form-control">
+
+				<label for="endDate" class="mt-2">Đến ngày:</label>
+				<input type="date" id="endDate" class="form-control">
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+				<button type="button" class="btn btn-primary" id="confirmExport">Xuất file</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	function confirmDelete(articleId) {
+		var form = document.getElementById("deleteForm");
+		form.action = "/NewsArticle/Delete/" + articleId;
+		var modal = new bootstrap.Modal(document.getElementById("deleteModal"));
+		modal.show();
+	}
+	function searchArticles() {
+		var searchValue = document.getElementById("searchInput").value;
+
+		$.ajax({
+			url: "/NewsArticle/Search",
+			type: "GET",
+			data: { title: searchValue },
+			success: function (response) {
+				var tableBody = document.getElementById("articleTableBody");
+				tableBody.innerHTML = ""; // Xóa dữ liệu cũ
+
+				response.forEach(function (item) {
+					var row = `<tr>
+								<td>${item.newsTitle}</td>
+								<td>${item.newsStatus == true ? "Active" : "Inactive"}</td>
+								<td>${item.modifiedDate}</td>
+								<td>${item.categoryName}</td>
+								<td>
+									<a href="/NewsArticle/Edit/${item.newsArticleId}">Edit</a> |
+									<a href="/NewsArticle/Details/${item.newsArticleId}">Details</a> |
+									<button class="btn btn-danger" onclick="confirmDelete('${item.newsArticleId}')">Delete</button>
+								</td>
+							</tr>`;
+					tableBody.innerHTML += row;
+				});
+			},
+			error: function () {
+				alert("Error fetching articles.");
+			}
+		});
+	}
+	let exportType = "";
+
+	function openExportModal(type) {
+		exportType = type;
+		$("#exportModal").modal("show");
+	}
+
+	document.getElementById("confirmExport").addEventListener("click", function () {
+		let startDate = document.getElementById("startDate").value;
+		let endDate = document.getElementById("endDate").value;
+
+		if (!startDate || !endDate) {
+			alert("Select date");
+			return;
+		}
+
+		let url = `/Report/ExportTo${exportType.charAt(0).toUpperCase() + exportType.slice(1)}?startDate=${startDate}&endDate=${endDate}`;
+		window.location.href = url; // Chuyển hướng để tải file
+		$("#exportModal").modal("hide");
+	});
+</script>
