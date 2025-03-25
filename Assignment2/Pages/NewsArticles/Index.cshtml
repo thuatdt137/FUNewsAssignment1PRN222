@@ -24,32 +24,34 @@
 
 		<!-- Lọc theo Tag(kiểu dropdown) -->
 		@*
+		
 		<div class="col-md-3">
 		<label>Tag:</label>
-		<select asp-for="TagId" asp-items="Model.TagList" class="form-control">
-		<option value="">Tất cả</option>
-		</select>
+		<div>
+		<label>
+		<input type="radio" name="TagId" value="" checked="@(!Model.TagId.HasValue)" />
+		Tất cả
+		</label>
+		@foreach (var tag in Model.TagList)
+		{
+		<div>
+		<label>
+		<input type="radio" name="TagId" value="@tag.Value" checked="@(Model.TagId == int.Parse(tag.Value))" />
+		@tag.Text
+		</label>
 		</div>
+		}
+		</div>
+		</div>
+
 		*@
 
 		<!-- Lọc theo Tag kiểu radio -->
 		<div class="col-md-3">
 			<label>Tag:</label>
-			<div>
-				<label>
-					<input type="radio" name="TagId" value="" checked="@(!Model.TagId.HasValue)" />
-					Tất cả
-				</label>
-				@foreach (var tag in Model.TagList)
-				{
-					<div>
-						<label>
-							<input type="radio" name="TagId" value="@tag.Value" checked="@(Model.TagId == int.Parse(tag.Value))" />
-							@tag.Text
-						</label>
-					</div>
-				}
-			</div>
+			<select asp-for="TagId" asp-items="Model.TagList" class="form-control">
+				<option value="">Tất cả</option>
+			</select>
 		</div>
 
 		<!-- Sắp xếp -->

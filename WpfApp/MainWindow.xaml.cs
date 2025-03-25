@@ -69,5 +69,10 @@ namespace WpfApp
 			}
 
 		}
-	}
+
+		private void btnSendToServer_Click(object sender, RoutedEventArgs e)
+		{
+
+        }
+    }
 }

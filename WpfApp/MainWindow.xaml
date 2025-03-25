@@ -41,7 +41,7 @@
 
         <StackPanel Grid.Column="1" Margin="10">
             <ListBox Name="lstNewsArticle" Height="250"/>
-            <Button Name="btnSendToServer" Content="Send to server" Margin="0, 10, 0, 0" Height="30" Width="120" />
+            <Button Name="btnSendToServer" Content="Send to server" Margin="0, 10, 0, 0" Height="30" Width="120" Click="btnSendToServer_Click" />
             <Button Name="btnLoadData" Content="Load Data" Margin="0, 10, 0, 0" Height="30" Width="120" Click="btnLoadData_Click" />
 
 
