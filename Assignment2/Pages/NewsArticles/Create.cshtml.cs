@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace Assignment2.Pages.NewsArticles
 {
@@ -45,6 +46,8 @@ namespace Assignment2.Pages.NewsArticles
                 {
                     NewsArticle.Tags.Add(_tagService.GetTagById(tagId));
                 }
+                NewsArticle.CreatedById = short.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+                NewsArticle.CreatedDate = DateTime.Now;
                 _newsArticleService.CreateNewsArticle(NewsArticle);
                 return RedirectToPage("./Index");
 

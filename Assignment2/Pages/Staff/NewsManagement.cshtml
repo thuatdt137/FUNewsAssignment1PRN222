@@ -1,0 +1,172 @@
+﻿@page
+@model Assignment2.Pages.Staff.NewsManagementModel
+
+@{
+    ViewData["Title"] = "Quản lý bài báo";
+}
+
+<h2>Quản lý bài báo</h2>
+
+<button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#createModal">Thêm bài báo</button>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Tiêu đề</th>
+            <th>Danh mục</th>
+            <th>Tác giả</th>
+            <th>Trạng thái</th>
+            <th>Tags</th>
+            <th>Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var article in Model.NewsArticles)
+        {
+            <tr>
+                <td>@article.NewsTitle</td>
+                <td>@article.Category.CategoryName</td>
+                <td>@article.CreatedBy.AccountName</td>
+                <td>@(article.NewsStatus == true ? "Hoạt động" : "Không hoạt động")</td>
+                <td>@string.Join(", ", article.Tags.Select(t => t.TagName))</td>
+                <td>
+                    <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#updateModal"
+                            onclick="fillUpdateModal('@article.NewsArticleId', '@article.NewsTitle', '@article.Headline', '@article.NewsContent', '@article.NewsSource', @article.CategoryId, @article.NewsStatus, '@string.Join(",", article.Tags.Select(t => t.TagId))')">
+                        Sửa
+                    </button>
+                    <form method="post" asp-page-handler="Delete" asp-route-id="@article.NewsArticleId" style="display:inline;"
+                          onsubmit="return confirm('Bạn có chắc muốn xóa bài báo này?');">
+                        <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Modal Thêm bài báo -->
+<div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form method="post" asp-page-handler="Create">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createModalLabel">Thêm bài báo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label asp-for="NewsArticle.NewsArticleId" class="form-label">ID bài báo</label>
+                        <input asp-for="NewsArticle.NewsArticleId" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="NewsArticle.NewsTitle" class="form-label">Tiêu đề</label>
+                        <input asp-for="NewsArticle.NewsTitle" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="NewsArticle.Headline" class="form-label">Tiêu đề phụ</label>
+                        <input asp-for="NewsArticle.Headline" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="NewsArticle.NewsContent" class="form-label">Nội dung</label>
+                        <textarea asp-for="NewsArticle.NewsContent" class="form-control" required rows="5"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="NewsArticle.NewsSource" class="form-label">Nguồn</label>
+                        <input asp-for="NewsArticle.NewsSource" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="NewsArticle.CategoryId" class="form-label">Danh mục</label>
+                        <select asp-for="NewsArticle.CategoryId" class="form-control" asp-items="@(new SelectList(Model.Categories, "CategoryId", "CategoryName"))" required></select>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="SelectedTagIds" class="form-label">Tags</label>
+                        <select asp-for="SelectedTagIds" class="form-control" multiple asp-items="@(new SelectList(Model.Tags, "TagId", "TagName"))"></select>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="NewsArticle.NewsStatus" class="form-label">Trạng thái</label>
+                        <select asp-for="NewsArticle.NewsStatus" class="form-control">
+                            <option value="1">Hoạt động</option>
+                            <option value="0">Không hoạt động</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="submit" class="btn btn-primary">Lưu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Sửa bài báo -->
+<div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form method="post" asp-page-handler="Update">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="updateModalLabel">Sửa bài báo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" asp-for="NewsArticle.NewsArticleId" id="updateNewsArticleId" />
+                    <div class="mb-3">
+                        <label asp-for="NewsArticle.NewsTitle" class="form-label">Tiêu đề</label>
+                        <input asp-for="NewsArticle.NewsTitle" class="form-control" id="updateNewsTitle" required />
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="NewsArticle.Headline" class="form-label">Tiêu đề phụ</label>
+                        <input asp-for="NewsArticle.Headline" class="form-control" id="updateHeadline" required />
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="NewsArticle.NewsContent" class="form-label">Nội dung</label>
+                        <textarea asp-for="NewsArticle.NewsContent" class="form-control" id="updateNewsContent" required rows="5"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="NewsArticle.NewsSource" class="form-label">Nguồn</label>
+                        <input asp-for="NewsArticle.NewsSource" class="form-control" id="updateNewsSource" required />
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="NewsArticle.CategoryId" class="form-label">Danh mục</label>
+                        <select asp-for="NewsArticle.CategoryId" class="form-control" id="updateCategoryId" asp-items="@(new SelectList(Model.Categories, "CategoryId", "CategoryName"))" required></select>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="SelectedTagIds" class="form-label">Tags</label>
+                        <select asp-for="SelectedTagIds" class="form-control" id="updateTagIds" multiple asp-items="@(new SelectList(Model.Tags, "TagId", "TagName"))"></select>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="NewsArticle.NewsStatus" class="form-label">Trạng thái</label>
+                        <select asp-for="NewsArticle.NewsStatus" class="form-control" id="updateStatus">
+                            <option value="1">Hoạt động</option>
+                            <option value="0">Không hoạt động</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="submit" class="btn btn-primary">Lưu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function fillUpdateModal(id, title, headline, content, source, categoryId, status, tagIds) {
+            document.getElementById("updateNewsArticleId").value = id;
+            document.getElementById("updateNewsTitle").value = title;
+            document.getElementById("updateHeadline").value = headline;
+            document.getElementById("updateNewsContent").value = content;
+            document.getElementById("updateNewsSource").value = source;
+            document.getElementById("updateCategoryId").value = categoryId;
+            document.getElementById("updateStatus").value = status;
+
+            const tagSelect = document.getElementById("updateTagIds");
+            const selectedTags = tagIds.split(",");
+            for (let option of tagSelect.options) {
+                option.selected = selectedTags.includes(option.value);
+            }
+        }
+    </script>
+}

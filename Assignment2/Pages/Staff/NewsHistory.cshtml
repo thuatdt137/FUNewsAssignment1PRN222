@@ -1,0 +1,32 @@
+﻿@page
+@model Assignment2.Pages.Staff.NewsHistoryModel
+
+@{
+    ViewData["Title"] = "Lịch sử bài báo";
+}
+
+<h2>Lịch sử bài báo</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Tiêu đề</th>
+            <th>Danh mục</th>
+            <th>Ngày tạo</th>
+            <th>Trạng thái</th>
+            <th>Tags</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var article in Model.NewsArticles)
+        {
+            <tr>
+                <td>@article.NewsTitle</td>
+                <td>@article.Category.CategoryName</td>
+                <td>@article.CreatedDate.ToString()</td>
+                <td>@(article.NewsStatus == true ? "Hoạt động" : "Không hoạt động")</td>
+                <td>@string.Join(", ", article.Tags.Select(t => t.TagName))</td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,21 @@
+﻿@page
+@model Assignment2.Pages.Auth.LogoutModel
+
+@{
+    ViewData["Title"] = "Đăng xuất";
+}
+
+<div class="row">
+    <div class="col-md-4 offset-md-4">
+        <h2 class="text-center">Đăng xuất</h2>
+        <p class="text-center">Bạn có chắc chắn muốn đăng xuất không?</p>
+        <form method="post" class="mt-4">
+            <div class="mb-3">
+                <button type="submit" class="btn btn-danger w-100">Đăng xuất</button>
+            </div>
+            <div class="mb-3">
+                <a asp-page="/Index" class="btn btn-secondary w-100">Hủy</a>
+            </div>
+        </form>
+    </div>
+</div>

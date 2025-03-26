@@ -1,7 +1,21 @@
 {
   "dependencies": {
+    "@microsoft/signalr": "^8.0.7",
     "bootstrap": "^5.3.3",
     "jquery": "^3.7.1",
     "popper": "^1.0.1"
-  }
+  },
+  "name": "assignment2",
+  "version": "1.0.0",
+  "main": "index.js",
+  "devDependencies": {
+    "mocha": "^11.1.0"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
 }

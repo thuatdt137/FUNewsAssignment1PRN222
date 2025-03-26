@@ -1,0 +1,141 @@
+﻿@page
+@model Assignment2.Pages.Staff.CategoryManagementModel
+@using System.Web // Thêm để dùng HttpUtility
+@{
+    ViewData["Title"] = "Quản lý danh mục";
+}
+
+<h2>Quản lý danh mục</h2>
+
+<!-- Nút thêm danh mục -->
+<button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#createModal">Thêm danh mục</button>
+
+<!-- Danh sách danh mục -->
+<table class="table">
+    <thead>
+        <tr>
+            <th>Tên danh mục</th>
+            <th>Mô tả</th>
+            <th>Danh mục cha</th>
+            <th>Trạng thái</th>
+            <th>Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var category in Model.Categories)
+        {
+            <tr>
+                <td>@category.CategoryName</td>
+                <td>@category.CategoryDesciption</td>
+                <td>@(category.ParentCategory?.CategoryName ?? "Không có")</td>
+                <td>@(category.IsActive == true ? "Hoạt động" : "Không hoạt động")</td>
+                <td>
+                    <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#updateModal"
+                            onclick="fillUpdateModal(@category.CategoryId, '@HttpUtility.JavaScriptStringEncode(category.CategoryName ?? "")', '@HttpUtility.JavaScriptStringEncode(category.CategoryDesciption ?? "")', @(category.ParentCategoryId.HasValue ? category.ParentCategoryId.Value : "null"), @category.IsActive.ToString().ToLower())">
+                        Sửa
+                    </button>
+                    <form method="post" asp-page-handler="Delete" asp-route-id="@category.CategoryId" style="display:inline;"
+                          onsubmit="return confirm('Bạn có chắc muốn xóa danh mục này?');">
+                        <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Modal Thêm danh mục -->
+<div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" asp-page-handler="Create">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createModalLabel">Thêm danh mục</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label asp-for="Category.CategoryName" class="form-label">Tên danh mục</label>
+                        <input asp-for="Category.CategoryName" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Category.CategoryDesciption" class="form-label">Mô tả</label>
+                        <input asp-for="Category.CategoryDesciption" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Category.ParentCategoryId" class="form-label">Danh mục cha</label>
+                        <select asp-for="Category.ParentCategoryId" class="form-control" asp-items="@(new SelectList(Model.Categories, "CategoryId", "CategoryName"))">
+                            <option value="">Không có</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Category.IsActive" class="form-label">Trạng thái</label>
+                        <select asp-for="Category.IsActive" class="form-control">
+                            <option value="true">Hoạt động</option>
+                            <option value="false">Không hoạt động</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="submit" class="btn btn-primary">Lưu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Sửa danh mục -->
+<div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" asp-page-handler="Update">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="updateModalLabel">Sửa danh mục</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" asp-for="Category.CategoryId" id="updateCategoryId" />
+                    <div class="mb-3">
+                        <label asp-for="Category.CategoryName" class="form-label">Tên danh mục</label>
+                        <input asp-for="Category.CategoryName" class="form-control" id="updateCategoryName" required />
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Category.CategoryDesciption" class="form-label">Mô tả</label>
+                        <input asp-for="Category.CategoryDesciption" class="form-control" id="updateCategoryDescription" required />
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Category.ParentCategoryId" class="form-label">Danh mục cha</label>
+                        <select asp-for="Category.ParentCategoryId" class="form-control" id="updateParentCategoryId" asp-items="@(new SelectList(Model.Categories, "CategoryId", "CategoryName"))">
+                            <option value="">Không có</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Category.IsActive" class="form-label">Trạng thái</label>
+                        <select asp-for="Category.IsActive" class="form-control" id="updateStatus">
+                            <option value="true">Hoạt động</option>
+                            <option value="false">Không hoạt động</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="submit" class="btn btn-primary">Lưu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function fillUpdateModal(id, name, description, parentId, status) {
+            console.log("Filling modal with:", { id, name, description, parentId, status }); // Debug
+            document.getElementById("updateCategoryId").value = id;
+            document.getElementById("updateCategoryName").value = name;
+            document.getElementById("updateCategoryDescription").value = description;
+            document.getElementById("updateParentCategoryId").value = parentId === null ? "" : parentId;
+            document.getElementById("updateStatus").value = status;
+        }
+    </script>
+}

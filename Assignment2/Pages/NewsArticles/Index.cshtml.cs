@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace Assignment2.Pages.NewsArticles
 {
@@ -42,6 +43,8 @@ namespace Assignment2.Pages.NewsArticles
 		private const int PageSize = 5;
 		public async Task<IActionResult> OnGetAsync()
 		{
+			if (int.Parse(User.FindFirst("AccountRole").Value) != 1) return Forbid();
+			var accountId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
 			// Lấy danh sách danh mục
 			CategoryList = await _context.Categories
 				.Select(c => new SelectListItem { Value = c.CategoryId.ToString(), Text = c.CategoryName })

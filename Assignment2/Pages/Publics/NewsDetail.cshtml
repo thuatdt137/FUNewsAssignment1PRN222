@@ -1,0 +1,96 @@
+﻿@page "{id}"
+@model Assignment2.Pages.Publics.NewsDetailModel
+@using Microsoft.AspNetCore.SignalR.Client
+@using System.Security.Claims
+@{
+    ViewData["Title"] = Model.Article?.NewsTitle ?? "Tin tức";
+}
+
+@if (Model.Article == null)
+{
+    <h2>Bài viết không tồn tại</h2>
+}
+else
+{
+    <h2>@Model.Article.NewsTitle</h2>
+    <div class="card">
+        <div class="card-body">
+            <p class="card-text"><strong>Danh mục:</strong> @Model.Article.Category.CategoryName</p>
+            <p class="card-text"><strong>Tác giả:</strong> @Model.Article.CreatedBy.AccountName</p>
+            <p class="card-text">@Model.Article.NewsContent</p>
+            <p class="card-text"><strong>Tags:</strong> @string.Join(", ", Model.Article.Tags.Select(t => t.TagName))</p>
+            <p class="card-text"><small class="text-muted">Đăng ngày: @Model.Article.CreatedDate.ToString()</small></p>
+
+            <!-- Bình luận -->
+            <h5>Bình luận</h5>
+            <div id="comments-@Model.Article.NewsArticleId">
+                @foreach (var comment in Model.Article.Comments)
+                {
+                    <div class="comment mb-2">
+                        <p>@comment.Content - <strong>@comment.Account.AccountEmail</strong> (@comment.CreatedDate.ToString())</p>
+                    </div>
+                }
+            </div>
+
+            <!-- Form thêm bình luận -->
+            @if (User.Identity.IsAuthenticated)
+            {
+                <form id="commentForm" class="mt-3">
+                    <div class="input-group">
+                        <input asp-for="CommentContent" class="form-control" placeholder="Viết bình luận..." />
+                        <button type="submit" class="btn btn-primary">Gửi</button>
+                    </div>
+                </form>
+            }
+            else
+            {
+                <p><a asp-page="/Auth/Login">Đăng nhập</a> để bình luận.</p>
+            }
+        </div>
+    </div>
+}
+@section Scripts {
+    <script src="~/lib/signalr/signalr.min.js"></script>
+    <script>
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/commentHub")
+            .build();
+
+        connection.on("ReceiveComment", (newsArticleId, accountId, content, createdDate) => {
+            if (newsArticleId === "@Model.Article.NewsArticleId") {
+                const commentDiv = document.getElementById(`comments-${newsArticleId}`);
+                const date = new Date(createdDate).toLocaleString('vi-VN');
+                fetch(`/Auth/GetAccountEmail?accountId=${accountId}`)
+                    .then(response => response.text())
+                    .then(email => {
+                        commentDiv.innerHTML += `<div class="comment mb-2"><p>${content} - <strong>${email}</strong> (${date})</p></div>`;
+                    });
+            }
+        });
+
+        connection.start()
+            .then(() => console.log("SignalR connected"))
+            .catch(err => console.error("SignalR connection error: ", err));
+
+        document.getElementById("commentForm")?.addEventListener("submit", function (e) {
+            e.preventDefault();
+            const newsArticleId = "@Model.Article.NewsArticleId";
+            const contentInput = this.querySelector("input");
+            const content = contentInput.value.trim();
+            const accountId = parseInt(@User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
+            console.log("Sending comment:", { newsArticleId, accountId, content }); // Debug
+
+            if (content) {
+                connection.invoke("SendComment", newsArticleId, accountId, content)
+                    .then(() => {
+                        contentInput.value = "";
+                        console.log("Comment sent successfully");
+                    })
+                    .catch(err => console.error("Invoke error: ", err));
+            } else {
+                console.log("Content is empty, not sending");
+            }
+        });
+    </script>
+}

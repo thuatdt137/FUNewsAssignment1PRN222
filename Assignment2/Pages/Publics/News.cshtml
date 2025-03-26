@@ -1,0 +1,26 @@
+﻿@page
+@model Assignment2.Pages.Publics.NewsModel
+@using Microsoft.AspNetCore.SignalR
+@using System.Security.Claims
+
+@{
+    ViewData["Title"] = "Tin tức";
+}
+
+<h2>Tin tức</h2>
+<div class="row">
+    @foreach (var article in Model.NewsArticles)
+    {
+        <div class="col-md-12 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <a asp-page="./NewsDetail" asp-route-id="@article.NewsArticleId">@article.NewsTitle</a>
+                    </h5>
+                    <p class="card-text"><strong>Danh mục:</strong> @article.Category.CategoryName</p>
+                    <p class="card-text"><small class="text-muted">Đăng bởi: @article.CreatedBy.AccountName - @article.CreatedDate.ToString()</small></p>
+                </div>
+            </div>
+        </div>
+    }
+</div>

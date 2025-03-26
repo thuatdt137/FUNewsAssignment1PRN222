@@ -23,7 +23,9 @@ public partial class FunewsManagementContext : DbContext
 
     public virtual DbSet<Tag> Tags { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+	public virtual DbSet<Comment> Comments { get; set; }
+
+	protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseSqlServer("Server=localhost;Database=FUNewsManagement;Trusted_Connection=SSPI;Encrypt=false;TrustServerCertificate=true");
 
@@ -119,7 +121,31 @@ public partial class FunewsManagementContext : DbContext
             entity.Property(e => e.TagName).HasMaxLength(50);
         });
 
-        OnModelCreatingPartial(modelBuilder);
+		modelBuilder.Entity<Comment>(entity =>
+		{
+			entity.ToTable("Comment");
+			entity.HasKey(e => e.CommentId);
+			entity.Property(e => e.CommentId).HasColumnName("CommentID");
+			entity.Property(e => e.NewsArticleId).HasColumnName("NewsArticleID");
+			entity.Property(e => e.AccountId).HasColumnName("AccountID").HasColumnType("smallint");
+			entity.Property(e => e.Content).HasMaxLength(1000);
+			entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+			entity.Property(e => e.UpdatedDate).HasColumnType("datetime");
+
+			entity.HasOne(d => d.Account)
+				.WithMany(p => p.Comments)
+				.HasForeignKey(d => d.AccountId)
+				.OnDelete(DeleteBehavior.NoAction) // Thay đổi từ Cascade sang NoAction
+				.HasConstraintName("FK_Comment_SystemAccount");
+
+			entity.HasOne(d => d.NewsArticle)
+				.WithMany(p => p.Comments)
+				.HasForeignKey(d => d.NewsArticleId)
+				.OnDelete(DeleteBehavior.Cascade)
+				.HasConstraintName("FK_Comment_NewsArticle");
+		});
+
+		OnModelCreatingPartial(modelBuilder);
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
